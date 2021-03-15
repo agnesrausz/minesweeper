@@ -4,6 +4,8 @@ const game = {
 
         // TODO: do the rest of the game setup here (eg. add event listeners)
         this.initRightClick();
+
+        this.initLeftClick();
     },
 
     drawBoard: function () {
@@ -69,8 +71,57 @@ const game = {
                 // and "flagged" class toggles on the clicked element
                 // (styles of "flagged" class are defined in style.css)
                 event.currentTarget.classList.toggle('flagged');
+                game.countFlagsLeft()
             });
         }
+    },
+    initLeftClick() {
+        const fields = document.querySelectorAll('.game-field .row .field');
+        for (let field of fields) {
+            field.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                if (!event.currentTarget.classList.contains('open') &&
+                    !event.currentTarget.classList.contains('flagged')) {
+                    event.currentTarget.classList.add('open');
+                    if (!event.currentTarget.classList.contains('mine')) {
+                        event.currentTarget.textContent = howManyMine()
+                    }
+                }
+
+                function howManyMine() {
+                    let counter = 0;
+                    let checkRows = [
+                        event.currentTarget.dataset.row,
+                        (parseInt(event.currentTarget.dataset.row) + 1).toString(),
+                        (parseInt(event.currentTarget.dataset.row) - 1).toString()];
+                    let checkCols = [
+                        event.currentTarget.dataset.col,
+                        (parseInt(event.currentTarget.dataset.col) + 1).toString(),
+                        (parseInt(event.currentTarget.dataset.col) - 1).toString()];
+                    for (let cRow of checkRows) {
+                        for (let cCol of checkCols) {
+                            try {
+                                if (document.querySelector
+                                    ('[data-row = "'+ cRow +'"][data-col = "' + cCol +'"]')
+                                    .classList.contains('mine')) {
+                                    counter += 1;
+                                }
+                            } catch (Exception) {console.log('Exception')}
+                        }
+                    }
+                    return counter !== 0 ? counter : null;
+                }
+            });
+        }
+    },
+    countFlagsLeft() {
+        let flagsLeftCounter = document.querySelector('#flags-left-counter')
+        let mines = document.querySelectorAll('.mine').length
+        let flags = document.querySelectorAll('.flagged').length
+        flagsLeftCounter.value = mines - flags
+
+
     },
 };
 
