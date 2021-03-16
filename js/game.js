@@ -6,6 +6,10 @@ const game = {
         this.initRightClick();
 
         this.initLeftClick();
+
+        this.countFlagsLeft();
+
+
     },
 
     drawBoard: function () {
@@ -71,6 +75,7 @@ const game = {
                 // and "flagged" class toggles on the clicked element
                 // (styles of "flagged" class are defined in style.css)
                 event.currentTarget.classList.toggle('flagged');
+
                 game.countFlagsLeft()
             });
         }
@@ -88,6 +93,11 @@ const game = {
                         event.currentTarget.textContent = howManyMine()
                     }
                 }
+
+                if (game.checkWin() || game.checkLose()) {
+                    game.gameOver()
+                }
+
 
                 function howManyMine() {
                     let counter = 0;
@@ -107,7 +117,7 @@ const game = {
                                     .classList.contains('mine')) {
                                     counter += 1;
                                 }
-                            } catch (Exception) {console.log('Exception')}
+                            } catch (Exception) {console.log('Exception');}
                         }
                     }
                     return counter !== 0 ? counter : null;
@@ -116,13 +126,40 @@ const game = {
         }
     },
     countFlagsLeft() {
-        let flagsLeftCounter = document.querySelector('#flags-left-counter')
-        let mines = document.querySelectorAll('.mine').length
-        let flags = document.querySelectorAll('.flagged').length
-        flagsLeftCounter.value = mines - flags
-
-
+        let flagsLeftCounter = document.querySelector('#flags-left-counter');
+        let mines = document.querySelectorAll('.mine').length;
+        let flags = document.querySelectorAll('.flagged').length;
+        flagsLeftCounter.value = mines - flags;
     },
+    checkWin() {
+        const fields = document.querySelectorAll('.game-field .row .field');
+        for (let field of fields) {
+            if ((!field.classList.contains('open') && !field.classList.contains('mine')) ||
+                (field.classList.contains('open') && field.classList.contains('mine'))){
+                return false
+            }
+        }
+        return true
+    },
+    checkLose() {
+        const fields = document.querySelectorAll('.game-field .row .field');
+        for (let field of fields) {
+            if (field.classList.contains('open') && field.classList.contains('mine')) {
+
+                return true
+            }
+        }
+        return false
+    },
+    gameOver() {
+        if (game.checkWin() || game.checkLose()) {
+            const fields = document.querySelectorAll('.game-field .row .field');
+            for (let field of fields) {
+                field.classList.contains('mine') ? field.classList.add('open') : null;
+                field.replaceWith(field.cloneNode(true));
+            }
+        }
+    }
 };
 
 game.init();
