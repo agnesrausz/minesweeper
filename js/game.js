@@ -83,6 +83,7 @@ const game = {
     initLeftClick() {
         const fields = document.querySelectorAll('.game-field .row .field');
         for (let field of fields) {
+            field.textContent = game.howManyMine(field);
             field.addEventListener('click', function (event) {
                 event.preventDefault();
 
@@ -90,7 +91,10 @@ const game = {
                     !event.currentTarget.classList.contains('flagged')) {
                     event.currentTarget.classList.add('open');
                     if (!event.currentTarget.classList.contains('mine')) {
-                        event.currentTarget.textContent = howManyMine()
+                        // event.currentTarget.textContent = game.howManyMine(event.currentTarget);
+                        if (event.currentTarget.textContent === '') {
+                            opener(event.currentTarget)
+                        }
                     }
                 }
 
@@ -98,30 +102,33 @@ const game = {
                     game.gameOver()
                 }
 
-
-                function howManyMine() {
-                    let counter = 0;
+                function opener(targetArea) {
+                    console.log('start')
                     let checkRows = [
-                        event.currentTarget.dataset.row,
-                        (parseInt(event.currentTarget.dataset.row) + 1).toString(),
-                        (parseInt(event.currentTarget.dataset.row) - 1).toString()];
+                        targetArea.dataset.row,
+                        (parseInt(targetArea.dataset.row) + 1).toString(),
+                        (parseInt(targetArea.dataset.row) - 1).toString()];
                     let checkCols = [
-                        event.currentTarget.dataset.col,
-                        (parseInt(event.currentTarget.dataset.col) + 1).toString(),
-                        (parseInt(event.currentTarget.dataset.col) - 1).toString()];
+                        targetArea.dataset.col,
+                        (parseInt(targetArea.dataset.col) + 1).toString(),
+                        (parseInt(targetArea.dataset.col) - 1).toString()];
                     for (let cRow of checkRows) {
                         for (let cCol of checkCols) {
                             try {
-                                if (document.querySelector
+                                let newTargetArea = document.querySelector
                                     ('[data-row = "'+ cRow +'"][data-col = "' + cCol +'"]')
-                                    .classList.contains('mine')) {
-                                    counter += 1;
+                                if (newTargetArea.innerText === '' &&
+                                    !newTargetArea.classList.contains('open')) {
+                                    newTargetArea.classList.add('open');
+                                    opener(newTargetArea);
+                                } else if (parseInt(newTargetArea.innerText) > 0){
+                                    newTargetArea.classList.add('open');
                                 }
-                            } catch (Exception) {console.log('Exception');}
+                            } catch (Exception) {console.log('Exception opener');}
                         }
                     }
-                    return counter !== 0 ? counter : null;
                 }
+
             });
         }
     },
@@ -159,7 +166,33 @@ const game = {
                 field.replaceWith(field.cloneNode(true));
             }
         }
+    },
+
+    howManyMine(myTarget) {
+        let counter = 0;
+        let checkRows = [
+            myTarget.dataset.row,
+            (parseInt(myTarget.dataset.row) + 1).toString(),
+            (parseInt(myTarget.dataset.row) - 1).toString()];
+        let checkCols = [
+            myTarget.dataset.col,
+            (parseInt(myTarget.dataset.col) + 1).toString(),
+            (parseInt(myTarget.dataset.col) - 1).toString()];
+        for (let cRow of checkRows) {
+            for (let cCol of checkCols) {
+                try {
+                    if (document.querySelector
+                        ('[data-row = "'+ cRow +'"][data-col = "' + cCol +'"]')
+                        .classList.contains('mine')) {
+                        counter += 1;
+                    }
+                } catch (Exception) {console.log('Exception');}
+            }
+        }
+        counter = myTarget.classList.contains('mine') ? 'mine' : counter;
+        return counter === 0 ? null : (counter === 'mine' ? 'mine' : counter);
     }
+
 };
 
 game.init();

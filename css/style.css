@@ -28,6 +28,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    color: transparent;
 }
 
 /* Reference solution for "Create mine flagging feature" user story */
@@ -39,8 +40,10 @@
     background: url('../img/open-field.png');
     font-weight: 700;
     text-align: center;
+    color: midnightblue;
 }
 
 .game-field .row .field.open.mine {
     background: url('../img/mine.png');
+    color: transparent;
 }
