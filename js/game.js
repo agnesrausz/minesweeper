@@ -103,7 +103,6 @@ const game = {
                 }
 
                 function opener(targetArea) {
-                    console.log('start')
                     let checkRows = [
                         targetArea.dataset.row,
                         (parseInt(targetArea.dataset.row) + 1).toString(),
@@ -146,13 +145,14 @@ const game = {
                 return false
             }
         }
+        alert('u win');
         return true
     },
     checkLose() {
         const fields = document.querySelectorAll('.game-field .row .field');
         for (let field of fields) {
             if (field.classList.contains('open') && field.classList.contains('mine')) {
-
+                alert('u lose');
                 return true
             }
         }
